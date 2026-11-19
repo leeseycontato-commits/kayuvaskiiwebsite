@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- ✏️ Título que aparece no separador do browser -->
+  <title>KAYUVASKII</title>
+  <meta name="description" content="KAYUVASKII: rapper e produtor. Discografia, lançamentos e redes.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ✏️ CORES */
+    :root {
+      --fundo: #000000;
+      --superficie: rgba(255, 255, 255, 0.05);   /* caixas transparentes (vidro) */
+      --texto: #f5f5f5;
+      --suave: #8c8c8c;
+      --linha: #1f1f1f;
+      --linha-forte: #333333;
+      --raio: 10px;
+      --luz-amarela: #ffc83d;   /* ✏️ cor das luzes */
+      --luz-vermelha: #ff2a1f;
+      --letra: "Manrope", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--fundo);
+      color: var(--texto);
+      font-family: var(--letra);
+      font-weight: 400;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    /* 🖼️ IMAGEM DE FUNDO do site todo (fundo.jpg na mesma pasta).
+       ✏️ Para escurecer mais/menos, muda os números 0.72 e 0.88 (0 = sem escuro, 1 = preto) */
+    body::before {
+      content: "";
+      position: fixed; inset: 0; z-index: -1;
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.88)),
+        url("fundo.jpg") center 30% / cover no-repeat;
+    }
+    a { color: inherit; text-decoration: none; }
+    ::selection { background: #fff; color: #000; }
+
+    .pagina { max-width: 1120px; margin: 0 auto; padding: 0 24px; position: relative; }
+
+    /* ---------- LUZES PEQUENAS ---------- */
+    .luzes { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .luzes span {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0;
+      animation: piscar var(--d) ease-in-out var(--atraso) infinite;
+    }
+    .luzes span.amarela { background: var(--luz-amarela); box-shadow: 0 0 8px 2px rgba(255, 200, 61, 0.7), 0 0 22px 6px rgba(255, 200, 61, 0.25); }
+    .luzes span.vermelha { background: var(--luz-vermelha); box-shadow: 0 0 8px 2px rgba(255, 42, 31, 0.7), 0 0 22px 6px rgba(255, 42, 31, 0.25); }
+    @keyframes piscar {
+      0%, 100% { opacity: 0.08; transform: translateY(0); }
+      50%      { opacity: 0.9;  transform: translateY(-10px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .luzes span { animation: none; opacity: 0.5; }
+    }
+    nav.menu, .pagina, footer { position: relative; z-index: 1; }
+
+    /* Rótulos pequenos em maiúsculas */
+    .rotulo {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--suave);
+    }
+
+    /* ---------- MENU ---------- */
+    nav.menu {
+      position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--linha);
+    }
+    nav.menu .pagina { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
+    nav.menu .logo { font-weight: 500; letter-spacing: 0.35em; font-size: 0.9rem; }
+    nav.menu ul { display: flex; gap: 32px; list-style: none; }
+    nav.menu ul a { font-size: 0.75rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--suave); transition: color 0.2s; }
+    nav.menu ul a:hover { color: var(--texto); }
+
+    /* ---------- BOTÃO DE MÚSICA ---------- */
+    .som {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: var(--suave);
+      border: 1px solid var(--linha-forte); border-radius: 8px;
+      padding: 8px 12px; cursor: pointer;
+      font: 500 0.7rem var(--letra); letter-spacing: 0.2em; text-transform: uppercase;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .som:hover, .som.a-tocar { color: var(--texto); border-color: var(--texto); }
+    .som .barras { display: inline-flex; align-items: end; gap: 2px; height: 12px; }
+    .som .barras i { width: 2px; height: 3px; background: currentColor; }
+    .som.a-tocar .barras i { animation: barra 0.9s ease-in-out infinite; }
+    .som.a-tocar .barras i:nth-child(2) { animation-delay: -0.3s; }
+    .som.a-tocar .barras i:nth-child(3) { animation-delay: -0.6s; }
+    @keyframes barra { 0%, 100% { height: 3px; } 50% { height: 12px; } }
+
+    /* ---------- TOPO ---------- */
+    header.topo {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      gap: 64px;
+      align-items: center;
+      padding-block: 80px 96px;
+      border-bottom: 1px solid var(--linha);
+    }
+    .foto {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: var(--raio);
+      overflow: hidden;
+      border: 1px solid var(--linha-forte);
+      background: var(--superficie);
+      box-shadow: -18px -18px 60px -30px rgba(255, 200, 61, 0.45), 18px 18px 60px -30px rgba(255, 42, 31, 0.5);
+    }
+    .foto img, .foto .sem-foto { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .foto .sem-foto { display: flex; align-items: center; justify-content: center; font-size: 5rem; font-weight: 300; color: var(--suave); }
+
+    h1 {
+      font-weight: 300;
+      font-size: clamp(2.6rem, 7vw, 5rem);
+      letter-spacing: 0.08em;
+      line-height: 1.05;
+      margin-block: 18px 20px;
+      word-break: break-word;
+    }
+    .intro { color: var(--suave); max-width: 440px; font-size: 1.02rem; font-weight: 300; }
+
+    .botoes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border: 1px solid var(--texto);
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .btn.cheio { background: var(--texto); color: var(--fundo); }
+    .btn.cheio:hover { background: transparent; color: var(--texto); }
+    .btn.vazio { border-color: var(--linha-forte); color: var(--texto); }
+    .btn.vazio:hover { border-color: var(--texto); }
+
+    /* ---------- SECÇÕES ---------- */
+    section { padding-block: 88px; border-bottom: 1px solid var(--linha); }
+    .cabecalho { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin-bottom: 40px; flex-wrap: wrap; }
+    h2 { font-weight: 300; font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: 0.04em; margin-top: 10px; }
+    .contador { font-size: 0.8rem; color: var(--suave); letter-spacing: 0.15em; }
+
+    /* Último lançamento */
+    .lancamento {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+      gap: 48px;
+      align-items: center;
+    }
+    .lancamento .nome { font-weight: 400; font-size: clamp(1.6rem, 4vw, 2.4rem); letter-spacing: 0.04em; line-height: 1.15; margin-block: 14px; word-break: break-word; }
+    .lancamento p { color: var(--suave); font-weight: 300; margin-bottom: 30px; }
+    .detalhes { display: flex; gap: 28px; margin-bottom: 30px; flex-wrap: wrap; }
+    .detalhes div span:last-child { display: block; margin-top: 4px; }
+    .player { border: 1px solid var(--linha-forte); border-radius: var(--raio); overflow: hidden; background: var(--superficie); }
+    /* Efeito vidro nas caixas */
+    .player, .booking, .links a {
+      backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+    .player iframe { display: block; width: 100%; border: 0; }
+
+    /* Discografia em lista */
+    .lista { list-style: none; border-top: 1px solid var(--linha); }
+    .lista a {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr) 100px 64px 24px;
+      gap: 16px;
+      align-items: center;
+      padding: 20px 12px;
+      border-bottom: 1px solid var(--linha);
+      transition: background 0.2s, padding 0.2s;
+    }
+    .lista a:hover { background: var(--superficie); padding-left: 20px; }
+    .lista .n { color: var(--suave); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+    .lista .t { font-size: 1.05rem; font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lista .f, .lista .a { font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--suave); }
+    .lista .a { text-align: right; font-variant-numeric: tabular-nums; }
+    .lista .s { color: var(--suave); text-align: right; transition: color 0.2s, transform 0.2s; }
+    .lista a:hover .s { color: var(--texto); transform: translate(2px, -2px); }
+
+    /* Videoclipes */
+    .videos { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 20px; }
+    /* Cartão transparente (efeito vidro) */
+    .video {
+      padding: 12px 12px 4px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
+      box-shadow: 0 10px 40px -20px rgba(0, 0, 0, 0.8);
+      transition: transform 0.3s, background 0.3s, border-color 0.3s;
+    }
+    .video:hover { transform: translateY(-4px); background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.28); }
+    .video .ecra {
+      position: relative; display: block; width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 0; border-radius: 10px;
+      overflow: hidden; background: rgba(0, 0, 0, 0.5);
+      padding: 0; cursor: pointer; color: var(--texto);
+    }
+    .video .ecra img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0.85; transition: opacity 0.3s, transform 0.4s; }
+    .video .ecra:hover img { opacity: 1; transform: scale(1.04); }
+    .video .ecra iframe { display: block; width: 100%; height: 100%; border: 0; }
+    /* Pré-visualização (vídeo sem som ao passar o rato) */
+    .video .previa {
+      position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+      pointer-events: none; opacity: 0; transition: opacity 0.5s;
+      transform: scale(1.35); /* esconde os botões do YouTube */
+    }
+    .video .previa.visivel { opacity: 1; }
+    .video .ecra:has(.previa.visivel) .play { opacity: 0; }
+    .video .selo {
+      position: absolute; left: 10px; top: 10px; z-index: 1;
+      font-size: 0.62rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 4px 8px; border-radius: 6px;
+      background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    }
+    .video .ecra .fonte { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--suave); }
+    .video .play {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      width: 64px; height: 64px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      font-size: 1.1rem; padding-left: 4px;
+      transition: background 0.2s, color 0.2s, opacity 0.3s;
+    }
+    .video .ecra:hover .play { background: var(--texto); color: var(--fundo); }
+    .video .info { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 12px 4px; }
+    .video .titulo-video { font-size: 1.05rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .video .info .rotulo { flex-shrink: 0; }
+    .videos .vazio {
+      grid-column: 1 / -1; color: var(--suave); font-weight: 300; padding: 28px;
+      border-radius: 16px; background: rgba(255, 255, 255, 0.04); border: 1px dashed rgba(255, 255, 255, 0.15);
+    }
+
+    /* Shows */
+    .shows { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+    .datas { list-style: none; border-top: 1px solid var(--linha); }
+    .datas li {
+      display: grid;
+      grid-template-columns: 90px minmax(0, 1fr) auto;
+      gap: 16px; align-items: center;
+      padding: 20px 12px;
+      border-bottom: 1px solid var(--linha);
+    }
+    .datas .dia { font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--suave); }
+    .datas .sitio { font-size: 1.05rem; }
+    .datas .sitio small { display: block; color: var(--suave); font-size: 0.85rem; }
+    .datas .bilhetes { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; border: 1px solid var(--linha-forte); border-radius: 8px; padding: 8px 14px; transition: border-color 0.2s, background 0.2s, color 0.2s; }
+    .datas .bilhetes:hover { background: var(--texto); color: var(--fundo); border-color: var(--texto); }
+    .datas .vazio { display: block; padding-block: 28px; color: var(--suave); font-weight: 300; }
+    .booking {
+      padding: 28px;
+      border: 1px solid var(--linha-forte);
+      border-radius: var(--raio);
+      background: var(--superficie);
+    }
+    .booking h3 { font-weight: 400; font-size: 1.4rem; letter-spacing: 0.04em; margin-block: 10px 8px; }
+    .booking p { color: var(--suave); font-weight: 300; margin-bottom: 22px; }
+    .booking .email { display: block; font-size: 1rem; font-weight: 500; word-break: break-all; margin-bottom: 22px; user-select: all; }
+
+    /* Sobre */
+    .sobre { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 64px; }
+    .sobre .bio p { font-size: 1.15rem; font-weight: 300; line-height: 1.75; color: #d6d6d6; }
+    .sobre .bio p + p { margin-top: 18px; }
+    .ficha { list-style: none; border-top: 1px solid var(--linha); }
+    .ficha li { display: flex; justify-content: space-between; gap: 16px; padding-block: 16px; border-bottom: 1px solid var(--linha); }
+    .ficha li span:last-child { text-align: right; }
+
+    /* Redes: quadrados */
+    .links { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+    .links a {
+      aspect-ratio: 1;
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 20px;
+      border: 1px solid var(--linha-forte);
+      border-radius: var(--raio);
+      background: var(--superficie);
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .links a:hover { background: var(--texto); color: var(--fundo); border-color: var(--texto); }
+    .links .topo-link { display: flex; justify-content: space-between; align-items: start; }
+    .links img { width: 24px; height: 24px; filter: invert(1); transition: filter 0.2s; }
+    .links a:hover img { filter: none; }
+    .links .nome-link { font-size: 0.82rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; }
+
+    footer {
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+      padding-block: 36px 48px;
+      font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--suave);
+    }
+
+    /* Telemóvel */
+    @media (max-width: 800px) {
+      /* Menu no telemóvel: links numa linha que desliza para o lado */
+      nav.menu .pagina { flex-wrap: wrap; height: auto; padding-block: 12px 0; row-gap: 4px; }
+      nav.menu ul {
+        order: 3; width: 100%; gap: 22px;
+        overflow-x: auto; scrollbar-width: none; padding-block: 10px 12px;
+      }
+      nav.menu ul::-webkit-scrollbar { display: none; }
+      nav.menu ul a { white-space: nowrap; }
+      header.topo, .lancamento, .sobre { grid-template-columns: 1fr; gap: 40px; }
+      header.topo { padding-block: 40px 64px; }
+      section { padding-block: 64px; }
+      .lista a { grid-template-columns: 32px minmax(0, 1fr) 48px 20px; }
+      .lista .f { display: none; }
+      .shows { grid-template-columns: 1fr; gap: 40px; }
+      .datas li { grid-template-columns: 1fr; gap: 6px; }
+      .datas .bilhetes { justify-self: start; margin-top: 6px; }
+      .links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Luzes pequenas amarelas e vermelhas (criadas pelo código no fim) -->
+  <div class="luzes" id="luzes" aria-hidden="true"></div>
+
+  <nav class="menu">
+    <div class="pagina">
+      <a class="logo" href="#">DRACCO+</a>
+      <ul>
+        <li><a href="#lancamento">Lançamento</a></li>
+        <li><a href="#redes">Redes</a></li>
+        <li><a href="#discografia">Discografia</a></li>
+        <li><a href="#videoclipes">Videoclipes</a></li>
+        <li><a href="#shows">Shows</a></li>
+        <li><a href="#sobre">Sobre</a></li>
+      </ul>
+      <button class="som" id="som" type="button" aria-label="Ligar ou desligar a música">
+        <span class="barras" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span id="som-texto">Som</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- 🎵 MÚSICA DE FUNDO: "qro fumar liamba! spikka.mp3" na mesma pasta.
+       ✏️ Para trocar, muda o nome do ficheiro no src (espaços escrevem-se %20) -->
+  <audio id="musica" src="qro%20fumar%20liamba!%20spikka.mp3" loop preload="auto"></audio>
+
+  <div class="pagina">
+
+    <!-- ================= TOPO ================= -->
+    <header class="topo">
+      <!-- 📷 FOTO: imagem chamada foto.jpg na mesma pasta -->
+      <div class="foto">
+        <img src="fundo.jpg" alt="Foto de KAYUVASKII"
+             onerror="this.outerHTML='<div class=&quot;sem-foto&quot;>K</div>'">
+      </div>
+
+      <div>
+        <!-- ✏️ FUNÇÃO, NOME e FRASE -->
+        <span class="rotulo">Rapper — Produtor</span>
+        <h1>KAYUVASKII</h1>
+        <p class="intro">Novo Projeto a caminho, GROUPIESZHEARTSDELUXE! já disponível.</p>
+
+        <div class="botoes">
+          <!-- ✏️ Link do botão principal -->
+          <a class="btn cheio link-deluxe" href="https://open.spotify.com/search/KAYUVASKII%20GROUPIESZHEARTSDELUXE" target="_blank" rel="noopener">Ouvir agora</a>
+          <a class="btn vazio" href="#discografia">Discografia</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ================= ÚLTIMO LANÇAMENTO ================= -->
+    <section id="lancamento">
+      <div class="lancamento">
+        <div>
+          <span class="rotulo">Último lançamento</span>
+          <!-- ✏️ Muda o nome, o texto, os detalhes e o link -->
+          <div class="nome">GROUPIESZHEARTSDELUXE!</div>
+          <p>A versão completa de GroupieszHeartsz!, com faixas novas.</p>
+          <div class="detalhes">
+            <div><span class="rotulo">Formato</span><span>Álbum</span></div>
+            <div><span class="rotulo">Data</span><span>Novembro 2026</span></div>
+          </div>
+          <a class="btn cheio link-deluxe" href="https://open.spotify.com/search/KAYUVASKII%20GROUPIESZHEARTSDELUXE" target="_blank" rel="noopener">Ouvir no Spotify</a>
+        </div>
+
+        <!-- 🎵 PLAYER: passa a ser do Spotify quando preencheres SPOTIFY_DELUXE no fim do ficheiro.
+             Até lá, fica o player da Apple Music. Se não quiseres player, apaga este bloco. -->
+        <div class="player">
+          <iframe id="player-album"
+            src="https://embed.music.apple.com/us/album/groupieszheartsdeluxe/6830339380"
+            height="450" loading="lazy" title="Player do álbum"
+            allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+            sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= REDES ================= -->
+    <section id="redes">
+      <div class="cabecalho">
+        <div><span class="rotulo">Redes</span><h2>Segue</h2></div>
+      </div>
+      <nav class="links" id="lista-links"></nav>
+    </section>
+
+    <!-- ================= DISCOGRAFIA ================= -->
+    <section id="discografia">
+      <div class="cabecalho">
+        <div><span class="rotulo">Catálogo</span><h2>Discografia</h2></div>
+        <span class="contador" id="contador"></span>
+      </div>
+      <ol class="lista" id="discos"></ol>
+    </section>
+
+    <!-- ================= VIDEOCLIPES ================= -->
+    <section id="videoclipes">
+      <div class="cabecalho">
+        <div><span class="rotulo">Vídeos</span><h2>Videoclipes</h2></div>
+        <span class="contador" id="contador-videos"></span>
+      </div>
+      <!-- Os vídeos vêm da lista VIDEOS, no fim do ficheiro -->
+      <div class="videos" id="videos"></div>
+    </section>
+
+    <!-- ================= SHOWS ================= -->
+    <section id="shows">
+      <div class="cabecalho">
+        <div><span class="rotulo">Ao vivo</span><h2>Shows</h2></div>
+      </div>
+      <div class="shows">
+        <!-- As datas vêm da lista SHOWS, no fim do ficheiro -->
+        <ul class="datas" id="datas"></ul>
+
+        <!-- ✏️ BOOKING -->
+        <div class="booking">
+          <span class="rotulo">Booking</span>
+          <h3>Contactar KAYUVASKII</h3>
+          <p>Para shows, festivais e eventos, contacte o artista.</p>
+          <span class="email">kayuvaskiagenciamento@gmail.com</span>
+          <a class="btn cheio" href="mailto:kayuvaskiagenciamento@gmail.com?subject=Booking%20KAYUVASKII">Enviar email</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SOBRE ================= -->
+    <section id="sobre">
+      <div class="cabecalho">
+        <div><span class="rotulo">Biografia</span><h2>Sobre</h2></div>
+      </div>
+      <div class="sobre">
+        <!-- ✏️ BIOGRAFIA: cada <p> é um parágrafo -->
+        <div class="bio">
+          <p>KAYUVASKII é um rapper e produtor Angolno, com músicas lançadas já desde 2024</p>
+          <p>Já Possui trabalhos dentro dO Mercado como GroupieszHeartsz! e Blackbird! (Apocalipse seletivo), para além de vários singles. O lançamento mais recente é a edição deluxe GROUPIESZHEARTSDELUXE!</p>
+        </div>
+
+        <!-- ✏️ FICHA -->
+        <ul class="ficha">
+          <li><span class="rotulo">Género</span><span>Hip-hop / Rap</span></li>
+          <li><span class="rotulo">Funções</span><span>Rapper, produtor</span></li>
+          <li><span class="rotulo">Desde</span><span>2024</span></li>
+          <li><span class="rotulo">Booking</span><span>kayuvaskiagenciamento@gmail.com</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <footer>
+      <span>© <span id="ano"></span> KAYUVASKII</span>
+      <span>Todos os direitos reservados</span>
+    </footer>
+  </div>
+
+  <script>
+    /* ✏️ GROUPIESZHEARTSDELUXE! no Spotify: cola aqui o link do álbum
+       (no Spotify: ... → Partilhar → Copiar link do álbum). Muda os botões e o player. */
+    const SPOTIFY_DELUXE = "";
+
+    /* ✏️ DISCOGRAFIA: do mais recente para o mais antigo. formato: "Álbum" ou "Single"
+       spotify: cola o link de cada lançamento (Partilhar → Copiar link).
+       Enquanto estiver vazio (""), o link abre a pesquisa do Spotify com esse nome. */
+    const DISCOS = [
+      { titulo: "GROUPIESZHEARTSDELUXE!",           formato: "Álbum",  ano: 2026, spotify: "" },
+      { titulo: "Kaizen",                           formato: "Single", ano: 2026, spotify: "" },
+      { titulo: "Kimi Ga Irukara",                  formato: "Single", ano: 2026, spotify: "" },
+      { titulo: "Boo!",                             formato: "Single", ano: 2026, spotify: "" },
+      { titulo: "Dont Know",                        formato: "Single", ano: 2026, spotify: "" },
+      { titulo: "Jelusnubudi",                      formato: "Single", ano: 2026, spotify: "" },
+      { titulo: "Blackbird! (Apocalipse seletivo)", formato: "Álbum",  ano: 2026, spotify: "" },
+      { titulo: "Cheetos",                          formato: "Single", ano: 2026, spotify: "" },
+      { titulo: "Hannah Montanah",                  formato: "Single", ano: 2026, spotify: "" },
+      { titulo: "GroupieszHeartsz!",                formato: "Álbum",  ano: 2026, spotify: "" },
+      { titulo: "AIRNBNB (feat. ukiyø)",            formato: "Single", ano: 2025, spotify: "https://open.spotify.com/album/55njmuz2LsfKkvHLUFo05G" },
+      { titulo: "MNPB",                             formato: "Single", ano: 2025, spotify: "" },
+      { titulo: "TFDR",                             formato: "Single", ano: 2025, spotify: "" },
+      { titulo: "BACKYO",                           formato: "Single", ano: 2025, spotify: "" },
+    ];
+
+    /* ✏️ VIDEOCLIPES: do mais recente para o mais antigo. Cola o link do YouTube
+       (serve youtube.com/watch?v=..., youtu.be/... ou youtube.com/shorts/...).
+       Para links de outros sites também funciona: aparece um cartão que abre o link.
+       Exemplo:
+       { titulo: "Kaizen", ano: 2026, url: "https://www.youtube.com/watch?v=XXXXXXXXXXX" }, */
+    const VIDEOS = [
+      { titulo: "5DAMANHA",      ano: 2026, url: "https://youtu.be/S03miAxAqOg" },
+      { titulo: "??????",        ano: 2026, url: "https://youtu.be/GianGdLr1Jw" },
+      { titulo: "Jelusnubudi",   ano: 2026, url: "https://youtu.be/-Burujo361I" },
+      { titulo: "Medusa",        ano: 2026, url: "https://youtu.be/XYEvNlu4FxM" },
+      { titulo: "Filhas da Eva", ano: 2026, url: "https://youtu.be/skSzwJ5Moo0" },
+    ];
+
+    /* ✏️ REDES: troca os URLs pelos teus. icone = nome em simpleicons.org */
+    const LINKS = [
+      { texto: "Apple Music", url: "https://music.apple.com/us/artist/kayuvaskii/1768148614", icone: "applemusic" },
+      { texto: "Instagram",   url: "https://www.instagram.com/kayuvaski/",                    icone: "instagram" },
+      { texto: "YouTube",     url: "https://www.youtube.com/@KAYUVASKI",                      icone: "youtube" },
+      { texto: "SoundCloud",  url: "https://soundcloud.com/kayuvaskiigmailcom",               icone: "soundcloud" },
+      // ✏️ Troca pelo link do teu perfil de artista no Spotify (Partilhar → Copiar link do artista)
+      { texto: "Spotify",     url: "https://open.spotify.com/search/KAYUVASKII",              icone: "spotify" },
+      { texto: "Shazam",      url: "https://www.shazam.com/song/6778320562/iphone-7",         icone: "shazam" },
+      // ✏️ Tira as // do início e põe o teu link:
+      // { texto: "TikTok",    url: "https://tiktok.com/@TEU_USER",    icone: "tiktok" },
+    ];
+
+    /* ✏️ SHOWS: acrescenta uma linha por concerto. Se a lista estiver vazia,
+       aparece "Sem datas anunciadas". Exemplo:
+       { data: "12 DEZ 2026", local: "Nome da sala", cidade: "Lisboa, PT", bilhetes: "https://link-dos-bilhetes" }, */
+    const SHOWS = [
+    ];
+
+    /* ✏️ QUANTIDADE DE LUZES no fundo (0 para tirar) */
+    const NUM_LUZES = 28;
+
+    // ======== Não precisas de mexer daqui para baixo ========
+    // Link do Spotify: o que colaste, ou a pesquisa pelo nome
+    const pesquisaSpotify = (titulo) =>
+      "https://open.spotify.com/search/" + encodeURIComponent("KAYUVASKII " + titulo);
+
+    // Último lançamento (botões + player)
+    const linkDeluxe = SPOTIFY_DELUXE || pesquisaSpotify("GROUPIESZHEARTSDELUXE");
+    document.querySelectorAll(".link-deluxe").forEach(a => a.href = linkDeluxe);
+    const albumDeluxe = SPOTIFY_DELUXE.match(/album\/([A-Za-z0-9]+)/);
+    if (albumDeluxe) {
+      const player = document.getElementById("player-album");
+      player.src = `https://open.spotify.com/embed/album/${albumDeluxe[1]}?theme=0`;
+      player.height = "352";
+    }
+
+    const lista = document.getElementById("discos");
+    DISCOS.forEach((d, i) => {
+      const url = d.spotify || (i === 0 && SPOTIFY_DELUXE) || pesquisaSpotify(d.titulo);
+      const li = document.createElement("li");
+      li.innerHTML =
+        `<a href="${url}" target="_blank" rel="noopener">` +
+          `<span class="n">${String(i + 1).padStart(2, "0")}</span>` +
+          `<span class="t">${d.titulo}</span>` +
+          `<span class="f">${d.formato}</span>` +
+          `<span class="a">${d.ano}</span>` +
+          `<span class="s">↗</span>` +
+        `</a>`;
+      lista.appendChild(li);
+    });
+    document.getElementById("contador").textContent = `${DISCOS.length} lançamentos`;
+
+    // Videoclipes
+    function idYoutube(url) {
+      const m = url.match(/(?:youtu\.be\/|[?&]v=|embed\/|shorts\/|live\/)([\w-]{11})/);
+      return m ? m[1] : null;
+    }
+    const caixaVideos = document.getElementById("videos");
+    if (VIDEOS.length === 0) {
+      caixaVideos.innerHTML = `<p class="vazio">Videoclipes em breve.</p>`;
+    } else {
+      document.getElementById("contador-videos").textContent =
+        `${VIDEOS.length} ${VIDEOS.length === 1 ? "vídeo" : "vídeos"}`;
+      VIDEOS.forEach(v => {
+        const id = idYoutube(v.url);
+        const card = document.createElement("article");
+        card.className = "video";
+        let fonte = "";
+        try { fonte = new URL(v.url).hostname.replace("www.", ""); } catch (e) {}
+        const ecra = id
+          ? `<a class="ecra" href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener" aria-label="Ver ${v.titulo}">` +
+              `<img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="" loading="lazy">` +
+              `<span class="play" aria-hidden="true">▶</span>` +
+            `</a>`
+          : `<a class="ecra" href="${v.url}" target="_blank" rel="noopener" aria-label="Ver ${v.titulo}">` +
+              `<span class="play" aria-hidden="true">↗</span>` +
+              `<span class="fonte">${fonte}</span>` +
+            `</a>`;
+        card.innerHTML = ecra +
+          `<div class="info"><span class="titulo-video">${v.titulo}</span><span class="rotulo">${v.ano || ""}</span></div>`;
+
+        // O YouTube só deixa tocar dentro da página quando o site está online (Vercel).
+        // Aberto como ficheiro no computador, o clique abre o clipe no YouTube.
+        const online = location.protocol.startsWith("http");
+        if (id && online) {
+          const ecraEl = card.querySelector(".ecra");
+
+          // Pré-visualização: ao passar o rato, o clipe toca sem som
+          let espera, previa;
+          const podePassarRato = window.matchMedia("(hover: hover)").matches;
+          if (podePassarRato) {
+            ecraEl.addEventListener("mouseenter", () => {
+              espera = setTimeout(() => {
+                previa = document.createElement("iframe");
+                previa.className = "previa";
+                previa.tabIndex = -1;
+                previa.setAttribute("aria-hidden", "true");
+                previa.allow = "autoplay; encrypted-media";
+                previa.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&playsinline=1&rel=0&start=20&modestbranding=1`;
+                previa.addEventListener("load", () => setTimeout(() => {
+                  if (!previa) return;
+                  previa.classList.add("visivel");
+                  const selo = document.createElement("span");
+                  selo.className = "selo"; selo.textContent = "Prévia";
+                  ecraEl.appendChild(selo);
+                }, 700));
+                ecraEl.appendChild(previa);
+              }, 350);
+            });
+            ecraEl.addEventListener("mouseleave", () => {
+              clearTimeout(espera);
+              if (previa) { previa.remove(); previa = null; }
+              const selo = ecraEl.querySelector(".selo");
+              if (selo) selo.remove();
+            });
+          }
+
+          // Ao clicar, o clipe toca ali mesmo com som (e a música de fundo pára)
+          ecraEl.addEventListener("click", (e) => {
+            e.preventDefault();
+            clearTimeout(espera);
+            const m = document.getElementById("musica");
+            if (m) m.pause();
+            const caixa = document.createElement("div");
+            caixa.className = "ecra";
+            caixa.innerHTML =
+              `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1" title="${v.titulo}" ` +
+              `allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+            ecraEl.replaceWith(caixa);
+          });
+        }
+        caixaVideos.appendChild(card);
+      });
+    }
+
+    const redes = document.getElementById("lista-links");
+    LINKS.forEach(({ texto, url, icone }) => {
+      const a = document.createElement("a");
+      a.href = url;
+      if (!url.startsWith("mailto:")) { a.target = "_blank"; a.rel = "noopener"; }
+      a.innerHTML =
+        `<span class="topo-link">` +
+          `<img src="https://cdn.jsdelivr.net/npm/simple-icons@11.14.0/icons/${icone}.svg" alt="" onerror="this.remove()">` +
+          `<span>↗</span>` +
+        `</span>` +
+        `<span class="nome-link">${texto}</span>`;
+      redes.appendChild(a);
+    });
+
+    document.getElementById("ano").textContent = new Date().getFullYear();
+
+    // Shows
+    const datas = document.getElementById("datas");
+    if (SHOWS.length === 0) {
+      datas.innerHTML = `<li style="display:block"><span class="vazio">Sem datas anunciadas. Novas datas em breve.</span></li>`;
+    } else {
+      SHOWS.forEach(s => {
+        const li = document.createElement("li");
+        li.innerHTML =
+          `<span class="dia">${s.data}</span>` +
+          `<span class="sitio">${s.local}<small>${s.cidade || ""}</small></span>` +
+          (s.bilhetes ? `<a class="bilhetes" href="${s.bilhetes}" target="_blank" rel="noopener">Bilhetes</a>` : `<span></span>`);
+        datas.appendChild(li);
+      });
+    }
+
+    // Luzes
+    const luzes = document.getElementById("luzes");
+    for (let i = 0; i < NUM_LUZES; i++) {
+      const s = document.createElement("span");
+      s.className = Math.random() < 0.5 ? "amarela" : "vermelha";
+      const t = 2 + Math.random() * 3;
+      s.style.width = s.style.height = t + "px";
+      s.style.left = Math.random() * 100 + "%";
+      s.style.top = Math.random() * 100 + "%";
+      s.style.setProperty("--d", (4 + Math.random() * 6).toFixed(1) + "s");
+      s.style.setProperty("--atraso", (-Math.random() * 10).toFixed(1) + "s");
+      luzes.appendChild(s);
+    }
+
+    // Música de fundo
+    /* ✏️ VOLUME da música (0 a 1) */
+    const VOLUME = 0.35;
+    const musica = document.getElementById("musica");
+    const botaoSom = document.getElementById("som");
+    const textoSom = document.getElementById("som-texto");
+    musica.volume = VOLUME;
+
+    function atualizarBotao() {
+      const aTocar = !musica.paused;
+      botaoSom.classList.toggle("a-tocar", aTocar);
+      textoSom.textContent = aTocar ? "Som on" : "Som off";
+    }
+    musica.addEventListener("play", atualizarBotao);
+    musica.addEventListener("pause", atualizarBotao);
+    // Sem ficheiro musica.mp3, o botão desaparece
+    musica.addEventListener("error", () => botaoSom.remove());
+
+    botaoSom.addEventListener("click", (e) => {
+      e.stopPropagation();
+      desligarArranque();
+      if (musica.paused) musica.play().catch(() => {}); else musica.pause();
+    });
+
+    // Os browsers bloqueiam som automático: a música começa no primeiro toque/clique na página
+    function arrancar(e) {
+      if (botaoSom.contains(e.target)) return; // o próprio botão trata disso
+      desligarArranque();
+      musica.play().catch(() => {});
+    }
+    function desligarArranque() {
+      document.removeEventListener("pointerdown", arrancar);
+      document.removeEventListener("keydown", arrancar);
+    }
+    musica.play().then(desligarArranque).catch(() => {
+      document.addEventListener("pointerdown", arrancar);
+      document.addEventListener("keydown", arrancar);
+    });
+    atualizarBotao();
+  </script>
+</body>
+</html>
